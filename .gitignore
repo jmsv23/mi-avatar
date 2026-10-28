@@ -1,0 +1,48 @@
+# claves (solo se versiona la plantilla)
+.env
+.env.*
+!.env.example
+
+# python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# datos del usuario (su avatar y sus videos)
+personaje/*
+!personaje/.gitkeep
+videos/*
+!videos/.gitkeep
+
+# generados por los comandos
+motion/index.html
+motion/_composiciones/
+motion/assets/avatar/
+motion/assets/videos/
+motion/renders/
+motion/.hyperframes/
+motion/.thumbnails/
+motion/snapshots/
+motion/node_modules/
+motion/package-lock.json
+
+# configuración local de los agentes (las skills de .claude/skills sí se versionan)
+.claude/settings.local.json
+CLAUDE.local.md
+.codex/
+
+# sistema operativo y editores
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*~
+*.log

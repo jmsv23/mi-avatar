@@ -1,0 +1,30 @@
+{
+  "idioma": "es",
+  "imagenes": {
+    "proveedor": "chatgpt",
+    "modelo": "gpt-image-1",
+    "calidad": "high"
+  },
+  "voz": {
+    "proveedor": "grabacion",
+    "elevenlabs": { "voice_id": "", "modelo": "eleven_multilingual_v2" },
+    "voicebox": { "url": "http://127.0.0.1:17493", "perfil": "" }
+  },
+  "transcripcion": {
+    "proveedor": "auto",
+    "whisperx_modelo": "small"
+  },
+  "lienzo": {
+    "formato": "vertical"
+  },
+  "marca": {
+    "fondo": "#1e6ee6",
+    "acento": "#ffc928",
+    "texto": "#ffffff"
+  },
+  "render": {
+    "hyperframes": "0.8.181",
+    "fps": 30,
+    "calidad": "standard"
+  }
+}
