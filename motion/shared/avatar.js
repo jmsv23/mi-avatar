@@ -130,8 +130,9 @@
       const cp = el("clipPath", { id: `${uid}-eye-${side}` }, defs);
       el("ellipse", { cx: 0, cy: ry * 0.05, rx, ry }, cp);
       const lid = el("rect", { x: -rx - 6, y: -ry - 8, width: 2 * rx + 12, height: 0, "clip-path": `url(#${uid}-eye-${side})` }, g);
+      const lower = el("rect", { x: -rx - 6, y: ry + 8, width: 2 * rx + 12, height: 0, "clip-path": `url(#${uid}-eye-${side})` }, g);
       const lash = el("path", { fill: "none", stroke: COLORS.linea, "stroke-width": Math.max(3, ry * 0.27), "stroke-linecap": "round" }, g);
-      lids[side] = { g, lid, lash };
+      lids[side] = { g, lid, lower, lash };
     }
 
     const cutouts = manifest.recortes;
@@ -192,6 +193,7 @@
         const e = p.ojos[side];
         lids[side].g.setAttribute("transform", `translate(${e.x} ${e.y}) rotate(${b.rotacion || 0})`);
         lids[side].lid.setAttribute("fill", e.piel);
+        lids[side].lower.setAttribute("fill", e.piel);
       }
       if (cutouts) {
         const ref = cutouts.referencia;
@@ -246,9 +248,13 @@
       }
       for (const side of ["izq", "der"]) {
         const c = blink ? Math.max(0, Math.min(1, k)) : 0;
-        const { lid, lash } = lids[side];
+        const { lid, lower, lash } = lids[side];
         const edge = ry * (-0.95 + 1.36 * c); // borde inferior del párpado (cerrado = un poco abajo del centro)
         lid.setAttribute("height", c > 0.02 ? edge + ry + 8 : 0);
+        // El párpado inferior sube hasta encontrarse con el superior al cerrar.
+        const bottomEdge = ry * (1.05 - 0.64 * c);
+        lower.setAttribute("y", bottomEdge);
+        lower.setAttribute("height", c > 0.02 ? ry + 8 - bottomEdge : 0);
         const sag = ry * (0.18 + 0.27 * c); // el borde se curva hacia abajo al cerrar
         const lift = ry * 0.18 * (1 - c);
         const lx = rx * 0.97;

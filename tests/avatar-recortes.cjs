@@ -46,8 +46,27 @@ for (const time of [0,0.3,0.43,0.48,0.54,0.8,1.5,2.2]) {
   snapshot(2.5); snapshot(0);
   assert.equal(snapshot(time),expected,`seek at ${time}`);
 }
+// Cambio de pose: fundido corto entre dos capas, y luego solo la capa nueva visible.
+const [under, over] = mount.children;
+player.render(2.05);
+assert.equal(under.style.opacity,'1'); assert.ok(Number(over.style.opacity)>0 && Number(over.style.opacity)<1);
+player.render(2.5);
+assert.equal(under.style.opacity,'0'); assert.equal(over.style.opacity,'1');
 const legacy = structuredClone(manifest); delete legacy.recortes;
-const fallback = AVATAR.create(new Element('div'),legacy);
+const fallbackRoot = new Element('div');
+const fallback = AVATAR.create(fallbackRoot,legacy);
 fallback.set({pose:'neutral',viseme:'A',lids:1});
 assert.equal(fallback.svg.children.find(node=>node.tag==='g').style.display,'');
+// Al cerrar, ningún tramo vertical del ojo puede seguir dejando ver el blanco.
+const lidRects = flatten(fallbackRoot).filter(node=>node.tag==='rect' && (node.attrs['clip-path']||'').includes('-eye-'));
+const clips = [...new Set(lidRects.map(node=>node.attrs['clip-path']))];
+assert.equal(clips.length,2);
+for (const clip of clips) {
+  const masks = lidRects.filter(node=>node.attrs['clip-path']===clip);
+  for (let y=-20; y<=23; y+=0.5) {
+    assert.ok(masks.some(node=>y>=Number(node.attrs.y) && y<=Number(node.attrs.y)+Number(node.attrs.height)),`uncovered eye at ${y}`);
+  }
+}
+fallback.set({lids:0});
+assert.ok(lidRects.every(node=>Number(node.attrs.height)===0));
 console.log('OK: facial states, disabled gestures, backward seeking, and original renderer.');

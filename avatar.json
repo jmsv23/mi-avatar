@@ -15,8 +15,8 @@
       "modelo": "eleven_multilingual_v2"
     },
     "voicebox": {
-      "url": "http://127.0.0.1:17493",
-      "perfil": ""
+      "url": "http://192.168.0.52:17493",
+      "perfil": "Presentador"
     }
   },
   "transcripcion": {
@@ -24,7 +24,7 @@
     "whisperx_modelo": "small"
   },
   "lienzo": {
-    "formato": "vertical"
+    "formato": "horizontal"
   },
   "marca": {
     "fondo": "#1e6ee6",

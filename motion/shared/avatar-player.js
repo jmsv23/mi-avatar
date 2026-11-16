@@ -6,12 +6,16 @@
  *
  * bodyEl recibe el movimiento procedural (respiración, balanceo, rebote, gestos) con
  * transform-origin abajo al centro; stageEl contiene el avatar (pose + boca + párpados).
+ *
+ * Cambio de pose: dos capas del avatar dentro de stageEl; la pose nueva aparece con un fundido corto
+ * sobre la anterior. Cada pose se desplaza para que su cara (ojos + boca) quede donde la de `neutral`,
+ * así la cabeza no salta aunque las imágenes de las poses no estén alineadas al píxel.
  */
 (function () {
   const TRANS = 0.05; // s de transición entre visemas
   const OPEN = { A: 1, E_I: 0.55, O_U: 0.8, FV: 0.3, CONS: 0.35, MBP: 0, REST: 0 };
   const BLINK = { close: 0.06, hold: 0.04, open: 0.07 };
-  const BOUNCE = 0.35; // s del rebote al cambiar de pose
+  const FADE = 0.18; // s del fundido entre poses (sin corte seco ni rebote)
 
   const smooth = (x) => (x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x));
 
@@ -60,30 +64,51 @@
     return o < 1 ? 1 - o : 0;
   }
 
+  function faceCenter(p) {
+    return { x: (p.ojos.izq.x + p.ojos.der.x + p.boca.x) / 3, y: (p.ojos.izq.y + p.ojos.der.y + p.boca.y) / 3 };
+  }
+
   function mount(bodyEl, stageEl, manifest, timeline, opts = {}) {
-    const avatar = AVATAR.create(stageEl, manifest, { base: opts.base || "" });
+    const ref = faceCenter(manifest.poses.neutral || Object.values(manifest.poses)[0]);
+    const off = {};
+    for (const [k, p] of Object.entries(manifest.poses)) {
+      const c = faceCenter(p);
+      off[k] = { x: ref.x - c.x, y: ref.y - c.y };
+    }
+    const layers = [0, 1].map(() => {
+      const el = stageEl.appendChild(document.createElementNS("http://www.w3.org/1999/xhtml", "div"));
+      const av = AVATAR.create(el, manifest, { base: opts.base || "" });
+      Object.assign(el.style, { position: "absolute", left: "0px", top: "0px" });
+      return { el, av };
+    });
     const { visemas, poses, parpadeos, gestos } = timeline;
+
+    function paint(layer, pose, opacity, v, lids) {
+      const habla = manifest.poses[pose].habla !== false;
+      layer.av.set({ pose, mouth: habla ? v.mouth : null, lids });
+      layer.el.style.opacity = String(opacity);
+      layer.el.style.transform = `translate(${off[pose].x.toFixed(2)}px, ${off[pose].y.toFixed(2)}px)`;
+    }
 
     function render(t) {
       const pi = Math.max(0, find(poses, t, "t"));
       const pose = poses[pi].pose;
       const v = visemeAt(visemas, t);
-      const habla = manifest.poses[pose].habla !== false;
-      avatar.set({ pose, mouth: habla ? v.mouth : null, lids: lidsAt(parpadeos, t) });
+      const lids = lidsAt(parpadeos, t);
+      const since = t - poses[pi].t;
+      if (pi > 0 && since < FADE) {
+        paint(layers[0], poses[pi - 1].pose, 1, v, lids);
+        paint(layers[1], pose, smooth(since / FADE), v, lids);
+      } else {
+        paint(layers[0], pose, 0, v, lids);
+        paint(layers[1], pose, 1, v, lids);
+      }
 
       // movimiento procedural, todo función de t
       const talk = talkingAt(visemas, t);
       let y = -3.5 * talk * (0.5 + 0.5 * Math.sin((2 * Math.PI * t) / 0.62)) - 2.5 * v.open;
       let rot = 0.55 * Math.sin((2 * Math.PI * t) / 6.1 + 0.7) + 0.35 * talk * Math.sin((2 * Math.PI * t) / 1.9);
-      let sy = 1 + 0.009 * Math.sin((2 * Math.PI * t) / 3.4);
-      let s = 1;
-
-      const since = t - poses[pi].t;
-      if (pi > 0 && since < BOUNCE) {
-        const k = since / BOUNCE;
-        s *= 1 + 0.035 * Math.sin(Math.PI * k) * (1 - k);
-        sy *= 1 - 0.03 * Math.sin(Math.PI * k * 2) * (1 - k);
-      }
+      const sy = 1 + 0.009 * Math.sin((2 * Math.PI * t) / 3.4);
       const gi = find(gestos, t, "t");
       if (gi >= 0 && t - gestos[gi].t < gestos[gi].d) {
         const g = gestos[gi];
@@ -92,10 +117,10 @@
         if (g.g === "asentir") y += 8 * wave;
         else if (g.g === "negar") rot += 2.4 * wave;
       }
-      bodyEl.style.transform = `translateY(${y.toFixed(2)}px) rotate(${rot.toFixed(3)}deg) scale(${s.toFixed(4)}, ${(s * sy).toFixed(4)})`;
+      bodyEl.style.transform = `translateY(${y.toFixed(2)}px) rotate(${rot.toFixed(3)}deg) scale(1, ${sy.toFixed(4)})`;
     }
 
-    return { render, avatar };
+    return { render, avatar: layers[1].av };
   }
 
   function drive(tl, player, duration, at = 0) {
