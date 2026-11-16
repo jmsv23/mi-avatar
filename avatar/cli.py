@@ -40,10 +40,17 @@ def main() -> None:
         except Exception:
             pass
 
-    from . import cara, componer, doctor, gestos, imagenes, preparar, prompts, timeline, transcribir, verificar, voz
+    from . import cara, componer, doctor, gestos, imagenes, personajes, preparar, prompts, timeline, transcribir, verificar, voz
 
     ap = argparse.ArgumentParser(prog="avatar", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
+
+    p = sub.add_parser("personajes", help="lista y elige el personaje activo")
+    steps = p.add_subparsers(dest="paso", required=True)
+    steps.add_parser("listar").set_defaults(fn=personajes.cmd_listar)
+    q = steps.add_parser("usar")
+    q.add_argument("nombre")
+    q.set_defaults(fn=personajes.cmd_usar)
 
     p = sub.add_parser("doctor")
     p.add_argument("--arreglar", action="store_true", help="instala el navegador de HyperFrames")

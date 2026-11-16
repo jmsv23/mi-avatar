@@ -6,7 +6,7 @@ personaje/personaje.json (lo escribe el agente al crear el avatar):
   descripcion   descripción física en inglés (la usa cada prompt para fijar la identidad)
   ropa          ropa en inglés
 """
-from .config import FICHA, PROMPTS, die, ok, read_json, rel
+from .config import FICHA, HOJA, INBOX, PERSONAJE, PROMPTS, die, ok, read_json, rel
 
 ESTILOS = {
     "plano": "modern flat 2D cartoon, vector look, clean dark outlines of consistent thickness, "
@@ -150,22 +150,22 @@ Si una imagen falla, pide en el mismo chat:
 
 def destino(numero: str) -> str:
     if numero == "00":
-        return "personaje/hoja-de-personaje.png"
-    return f"personaje/inbox/{numero}-{next(p[1] for p in POSES if p[0] == numero)}.png"
+        return rel(HOJA)
+    return rel(INBOX / f"{numero}-{next(p[1] for p in POSES if p[0] == numero)}.png")
 
 
 def adjuntos(numero: str) -> str:
     if numero == "00":
         return "Adjunta 1 a 3 fotos tuyas en el mismo mensaje."
     if numero == "01":
-        return "Adjunta `personaje/hoja-de-personaje.png` en el mismo mensaje."
-    return "Pégalo en la misma conversación, después de aprobar la maestra (si es un chat nuevo, adjunta `personaje/inbox/01-neutral.png`)."
+        return f"Adjunta `{rel(HOJA)}` en el mismo mensaje."
+    return f"Pégalo en la misma conversación, después de aprobar la maestra (si es un chat nuevo, adjunta `{rel(INBOX / '01-neutral.png')}`)."
 
 
 def cmd_prompts(a) -> None:
     f = ficha()
     PROMPTS.mkdir(parents=True, exist_ok=True)
-    (PROMPTS / "00-como-usar.md").write_text(COMO_USAR, encoding="utf-8")
+    (PROMPTS / "00-como-usar.md").write_text(COMO_USAR.replace("personaje/", rel(PERSONAJE) + "/"), encoding="utf-8")
     for numero in ["00"] + [p[0] for p in POSES]:
         name = "hoja-de-personaje" if numero == "00" else next(p[1] for p in POSES if p[0] == numero)
         body = f"# {numero} · {name}  →  guardar como `{destino(numero)}`\n\n{adjuntos(numero)}\n\n```\n{prompt_de(numero, f)}\n```\n"

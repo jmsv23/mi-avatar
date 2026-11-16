@@ -22,7 +22,7 @@ FOTOS = ("*.jpg", "*.jpeg", "*.png", "*.webp")
 def fotos() -> list[Path]:
     out = sorted(p for pat in FOTOS for p in PERSONAJE.glob("foto" + pat))
     if not out:
-        die("no hay fotos: guárdalas como personaje/foto1.jpg, personaje/foto2.jpg…")
+        die(f"no hay fotos: guárdalas en {rel(PERSONAJE)}/ como foto1.jpg, foto2.jpg…")
     return out[:3]
 
 
@@ -38,12 +38,12 @@ def refs(numero: str) -> list[Path]:
     if numero == "00":
         return fotos()
     if not HOJA.exists():
-        die("falta personaje/hoja-de-personaje.png (genera primero la 00)")
+        die(f"falta {rel(HOJA)} (genera primero la 00)")
     if numero == "01":
         return [HOJA]
     master = INBOX / "01-neutral.png"
     if not master.exists():
-        die("falta la maestra personaje/inbox/01-neutral.png (genera y aprueba primero la 01)")
+        die(f"falta la maestra {rel(master)} (genera y aprueba primero la 01)")
     return [master, HOJA]
 
 

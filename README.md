@@ -67,3 +67,9 @@ Las instrucciones para el agente están en `AGENTS.md` y en `.claude/skills/`.
 La fuente Montserrat se distribuye bajo la licencia SIL Open Font License (`motion/assets/fonts/OFL.txt`).
 
 Para contribuir al sistema facial, consulta [el flujo técnico y las pruebas](docs/gestos.md).
+
+## Varios personajes
+
+Cada personaje tiene su propia carpeta dentro de `personaje/`. Presentador vive en `personaje/presentador/`, con sus propuestas, ficha y hoja de personaje. Las nuevas imágenes y revisiones también se guardan ahí.
+
+El personaje elegido se guarda en `avatar.json`, en `personaje_activo`. Puedes pedir al asistente que cambie de personaje; los comandos son `uv run avatar personajes listar` y `uv run avatar personajes usar presentador`. Cada nuevo personaje necesita su propia carpeta y ficha antes de seleccionarlo. Comprueba el personaje activo antes de componer un video. Los proyectos anteriores sin esa selección siguen funcionando como antes.

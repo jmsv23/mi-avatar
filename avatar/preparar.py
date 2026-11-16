@@ -111,7 +111,7 @@ def contact_sheet(ids: list[str]) -> None:
 def cmd_preparar(a) -> None:
     files = {p.stem: p for p in INBOX.glob("*.png") if re.match(r"\d\d-", p.name)}
     if MASTER not in files:
-        die("falta la maestra personaje/inbox/01-neutral.png")
+        die(f"falta la maestra {rel(INBOX / '01-neutral.png')}")
     POSES.mkdir(parents=True, exist_ok=True)
     keyed = {}
     for stem, p in sorted(files.items()):

@@ -1,13 +1,30 @@
 """Rutas, configuración (avatar.json + .env) y utilidades compartidas por todos los comandos."""
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PERSONAJE = ROOT / "personaje"
+CONFIG = json.loads((ROOT / "avatar.json").read_text(encoding="utf-8"))
+PERSONAJES = ROOT / "personaje"
+
+
+def carpeta_personaje(nombre: str | None, base: Path = PERSONAJES) -> Path:
+    """Sin selección conserva la estructura de los proyectos anteriores."""
+    if nombre is None:
+        return base
+    if not isinstance(nombre, str) or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", nombre):
+        raise ValueError("el nombre del personaje debe usar minúsculas, números y guiones")
+    path = base / nombre
+    if not path.resolve().is_relative_to(base.resolve()):
+        raise ValueError("la carpeta del personaje debe estar dentro de personaje/")
+    return path
+
+
+PERSONAJE = carpeta_personaje(CONFIG.get("personaje_activo"))
 INBOX = PERSONAJE / "inbox"
 POSES = PERSONAJE / "poses"
 LAYERS = PERSONAJE / "layers"
@@ -39,7 +56,6 @@ def _load_env() -> None:
 
 
 _load_env()
-CONFIG = json.loads((ROOT / "avatar.json").read_text(encoding="utf-8"))
 
 
 def die(msg: str) -> None:

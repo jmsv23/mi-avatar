@@ -1,6 +1,8 @@
 {
   "idioma": "es",
-  "rostro": { "sistema": "svg" },
+  "rostro": {
+    "sistema": "svg"
+  },
   "imagenes": {
     "proveedor": "chatgpt",
     "modelo": "gpt-image-1",
@@ -8,8 +10,14 @@
   },
   "voz": {
     "proveedor": "grabacion",
-    "elevenlabs": { "voice_id": "", "modelo": "eleven_multilingual_v2" },
-    "voicebox": { "url": "http://127.0.0.1:17493", "perfil": "" }
+    "elevenlabs": {
+      "voice_id": "",
+      "modelo": "eleven_multilingual_v2"
+    },
+    "voicebox": {
+      "url": "http://127.0.0.1:17493",
+      "perfil": ""
+    }
   },
   "transcripcion": {
     "proveedor": "auto",
@@ -27,5 +35,6 @@
     "hyperframes": "0.8.181",
     "fps": 30,
     "calidad": "standard"
-  }
+  },
+  "personaje_activo": "presentador"
 }

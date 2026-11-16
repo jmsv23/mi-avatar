@@ -16,6 +16,14 @@ Funciona igual en Claude Code (incluida la pestaña Code de Claude Desktop) y en
   `open <carpeta>` (Mac), `explorer <carpeta>` (Windows) o `xdg-open <carpeta>` (Linux).
   Las imágenes que el usuario pega en el chat **no** quedan guardadas como archivos: pídele que las copie a la carpeta.
 
+## Varios personajes
+
+Cada personaje vive en `personaje/<nombre>/`. `avatar.json → personaje_activo` selecciona cuál usan todos los comandos. El actual es `presentador`.
+Antes de trabajar revisa esa selección. Todas las rutas `personaje/...` de las skills se interpretan dentro de la carpeta del personaje activo, por ejemplo `personaje/presentador/inbox/01-neutral.png`. Nunca mezcles archivos de distintos personajes.
+Usa `uv run avatar personajes listar` para listar y `uv run avatar personajes usar <nombre>` para elegir uno ya preparado. Para uno nuevo crea su carpeta y ficha, y luego selecciónalo. Proyectos anteriores sin `personaje_activo` conservan las rutas originales.
+Los videos se componen con el personaje activo: comprueba la selección antes de componer o volver a componer un video.
+Los personajes pueden ser inventados si el usuario lo pide. En ese caso las propuestas aprobadas sustituyen las fotos; conserva la hoja y la maestra como referencias.
+
 ## Las tres fases (cada una es una skill)
 
 | Fase | Skill | Cuándo |
@@ -35,7 +43,7 @@ Todos los pasos son subcomandos de `uv run avatar <comando>`, ejecutados desde l
 formato, colores de marca) y las claves en `.env`.
 
 ```
-personaje/            el avatar del usuario (fotos, hoja de personaje, poses, cara.json, manifest.json)
+personaje/<nombre>/   cada avatar (referencias, hoja de personaje, poses, cara.json, manifest.json)
 videos/<slug>/        cada video: audio.wav, transcripcion.json, plan.json, timeline.json, video.mp4
 motion/               proyecto HyperFrames (render); motion/shared/*.js es el avatar y las escenas
 avatar/               código Python de los comandos
