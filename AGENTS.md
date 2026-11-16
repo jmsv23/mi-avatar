@@ -23,6 +23,7 @@ Funciona igual en Claude Code (incluida la pestaña Code de Claude Desktop) y en
 | Preparar el equipo | `.claude/skills/avatar-equipo/SKILL.md` | La primera vez, o si `uv run avatar doctor` falla |
 | Crear el avatar | `.claude/skills/avatar-crear/SKILL.md` | "quiero crear mi avatar", o no existe `personaje/manifest.json` |
 | Hacer un video | `.claude/skills/avatar-video/SKILL.md` | "quiero hacer un video", con el avatar ya listo |
+| Elegir boca y párpados | `.claude/skills/avatar-gestos/SKILL.md` | Quiere mejorar la cara animada o elegir entre SVG y recortes |
 
 **Lee la skill completa antes de empezar su fase** (en Codex, ábrela con la ruta de arriba).
 Si el usuario solo dice "hola" o "¿qué hago?", corre `uv run avatar doctor --rapido` y llévalo a la fase que le toca.
@@ -44,4 +45,8 @@ avatar/               código Python de los comandos
 
 1. **Consistencia**: la IA solo crea las imágenes iniciales del personaje. Los videos nunca regeneran imágenes.
 2. **Determinista**: el render es una función del tiempo (sin `Math.random`, `Date.now` ni animaciones CSS).
-3. Las poses se generan con **boca cerrada** y **fondo verde #00FF00**; la boca y los párpados se dibujan encima.
+3. Las poses se generan con **boca cerrada** y **fondo verde #00FF00**; la boca y los párpados se colocan encima.
+4. **Elección del usuario**: conserva el sistema facial elegido (`rostro.sistema`: `svg` o `recortes`).
+   SVG es el valor inicial; los proyectos anteriores sin esa opción conservan su funcionamiento.
+   Los recortes se generan y aprueban una sola vez desde la maestra; nunca se reemplazan las poses completas.
+   No cambies de recortes a SVG para ocultar un error ni actives piezas sin mostrarlas y obtener aprobación.

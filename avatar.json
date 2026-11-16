@@ -1,5 +1,6 @@
 {
   "idioma": "es",
+  "rostro": { "sistema": "svg" },
   "imagenes": {
     "proveedor": "chatgpt",
     "modelo": "gpt-image-1",

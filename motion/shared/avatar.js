@@ -1,4 +1,4 @@
-/* Avatar 2D: pose PNG + boca SVG paramétrica + capa de vello facial + párpados.
+/* Avatar 2D: pose PNG + recortes faciales opcionales; boca SVG y párpados como alternativa.
  *
  * Todo vive en coordenadas del PNG normalizado (1024x1536). El contenedor se escala por CSS.
  * Sin estado temporal propio: quien anima llama avatar.set({...}) con valores ya calculados
@@ -43,6 +43,11 @@
     const pb = VISEMES[b] || CLOSED;
     const out = {};
     for (const key of KEYS) out[key] = pa[key] + (pb[key] - pa[key]) * k;
+    // Conserva las formas de origen para los recortes, que se cambian sin
+    // fundir dos bocas (la mezcla de imágenes produce dientes duplicados).
+    out.from = a;
+    out.to = b;
+    out.mix = k;
     return out;
   }
 
@@ -129,6 +134,34 @@
       lids[side] = { g, lid, lash };
     }
 
+    const cutouts = manifest.recortes;
+    const mouthFrames = {};
+    const eyeFrames = {};
+    const spriteMouth = el("g", {}, svg);
+    const spriteEyes = {};
+    function addFrame(frame, anchor, parent) {
+      return el("image", {
+        href: base + frame.archivo, x: frame.x - anchor.x, y: frame.y - anchor.y,
+        width: frame.ancho, height: frame.alto, opacity: 0,
+      }, parent);
+    }
+    if (cutouts) {
+      for (const [key, frame] of Object.entries(cutouts.bocas)) {
+        mouthFrames[key] = addFrame(frame, cutouts.referencia.boca, spriteMouth);
+      }
+      for (const side of ["izq", "der"]) {
+        spriteEyes[side] = el("g", {}, svg);
+        eyeFrames[side] = {};
+        for (const [key, frame] of Object.entries(cutouts.ojos[side])) {
+          eyeFrames[side][key] = addFrame(frame, cutouts.referencia.ojos[side], spriteEyes[side]);
+        }
+      }
+    }
+
+    function showFrame(frames, key) {
+      for (const [name, frame] of Object.entries(frames)) frame.setAttribute("opacity", name === key ? 1 : 0);
+    }
+
     let pose = null;
     const state = {};
 
@@ -160,9 +193,29 @@
         lids[side].g.setAttribute("transform", `translate(${e.x} ${e.y}) rotate(${b.rotacion || 0})`);
         lids[side].lid.setAttribute("fill", e.piel);
       }
+      if (cutouts) {
+        const ref = cutouts.referencia;
+        const scale = (b.escala || 1) / ref.boca.escala;
+        spriteMouth.setAttribute("transform", `translate(${b.x} ${b.y}) rotate(${b.rotacion || 0}) scale(${scale})`);
+        const angle = eyes => Math.atan2(eyes.der.y - eyes.izq.y, eyes.der.x - eyes.izq.x);
+        const distance = eyes => Math.hypot(eyes.der.x - eyes.izq.x, eyes.der.y - eyes.izq.y);
+        const eyeScale = distance(p.ojos) / distance(ref.ojos);
+        const eyeRotation = (angle(p.ojos) - angle(ref.ojos)) * 180 / Math.PI;
+        for (const side of ["izq", "der"]) {
+          const e = p.ojos[side];
+          spriteEyes[side].setAttribute("transform", `translate(${e.x} ${e.y}) rotate(${eyeRotation}) scale(${eyeScale})`);
+        }
+      }
     }
 
     function setMouth(m) {
+      if (cutouts) {
+        mouthG.style.display = "none";
+        const key = !m || pose.habla === false ? "REST"
+          : m.from ? ((m.mix || 0) < 0.5 ? m.from : m.to) : (state.viseme || "REST");
+        showFrame(mouthFrames, key);
+        return;
+      }
       const open = m && m.bottom - m.top > 1.5;
       mouthG.style.display = open ? "" : "none";
       if (!open) return;
@@ -184,6 +237,13 @@
 
     function setLids(k) {
       const blink = pose.parpadeo !== false;
+      if (cutouts) {
+        lidG.setAttribute("opacity", 0);
+        const c = blink ? Math.max(0, Math.min(1, k)) : 0;
+        const key = c < 0.2 ? "abierto" : c < 0.75 ? "medio" : "cerrado";
+        for (const side of ["izq", "der"]) showFrame(eyeFrames[side], key);
+        return;
+      }
       for (const side of ["izq", "der"]) {
         const c = blink ? Math.max(0, Math.min(1, k)) : 0;
         const { lid, lash } = lids[side];

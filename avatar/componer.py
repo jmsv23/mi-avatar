@@ -99,13 +99,14 @@ def cid(slug: str) -> str:
 
 def sync_avatar() -> None:
     """personaje/{poses,layers,manifest.json} -> motion/assets/avatar/ (el render solo ve motion/)."""
-    read_json(MANIFEST, "el avatar no está listo (skill avatar-crear)")
+    from .rostro import actual
+    manifest = actual(read_json(MANIFEST, "el avatar no está listo (skill avatar-crear)"))
     dest = MOTION / "assets" / "avatar"
     shutil.rmtree(dest, ignore_errors=True)
     shutil.copytree(POSES, dest / "poses", ignore=shutil.ignore_patterns("_*"))
     if LAYERS.exists():
         shutil.copytree(LAYERS, dest / "layers")
-    (dest / "manifest.js").write_text(f"window.AVATAR_MANIFEST = {MANIFEST.read_text(encoding='utf-8')};\n", encoding="utf-8")
+    (dest / "manifest.js").write_text(f"window.AVATAR_MANIFEST = {json.dumps(manifest, ensure_ascii=False)};\n", encoding="utf-8")
 
 
 def page(slug: str, tl: dict, videos: str) -> str:

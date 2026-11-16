@@ -223,7 +223,8 @@ def cmd_anclajes(a) -> None:
         print(f"  {pid:15s} rot={rot:5.1f} boca=({mx},{my}) m={ms}  ojos=" +
               " ".join(f"{k}({e['x']},{e['y']}) m={e['match']}" for k, e in eyes.items()) + flag)
 
-    write_json(MANIFEST, {
+    from .rostro import aplicar
+    write_json(MANIFEST, aplicar({
         "version": 2,
         "lienzo": {"ancho": 1024, "alto": 1536},
         "visemas": ["REST", "A", "E_I", "O_U", "MBP", "FV", "CONS"],
@@ -231,7 +232,7 @@ def cmd_anclajes(a) -> None:
         "colores": colores,
         "nota": "Anclajes en píxeles del PNG normalizado. 'izq'/'der' = lados de la imagen. match < 0.6 = revisar.",
         "poses": poses,
-    })
+    }, c))
     ok(f"{rel(MANIFEST)} · {len(poses)} poses")
     if revisar:
         print(f"! revisa a mano (match bajo): {', '.join(revisar)} → `avatar cuadricula <pose>` y corrige en cara.json → poses")

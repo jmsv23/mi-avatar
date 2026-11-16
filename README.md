@@ -35,12 +35,20 @@ También necesitas una computadora con Mac, Windows o Linux, unos 3 GB libres y 
 ## Cómo funciona
 
 1. **Tu personaje**: de tus fotos sale una hoja de personaje; de ahí, una imagen maestra y 10 poses, todas con la boca cerrada.
-2. **La animación**: la boca y los párpados se dibujan encima de cada pose y se mueven al ritmo de tu voz.
+2. **La animación**: eliges entre formas dibujadas (SVG) o pequeños recortes de boca y ojos basados en tu maestra.
+   Los recortes conservan mejor el acabado de labios y pestañas en personajes con volumen y textura;
+   requieren preparar y revisar imágenes adicionales una sola vez. Ambas opciones conservan las poses originales.
    Tu personaje no cambia nunca, porque no se generan imágenes nuevas en cada video.
 3. **Tus videos**: tú pones la voz (o un guion), tu asistente propone las escenas y tú las apruebas.
    El video se renderiza en tu computadora con [HyperFrames](https://hyperframes.heygen.com).
 
 ## Preguntas frecuentes
+
+**¿Puedo elegir cómo se anima la cara?**
+Sí. Las formas SVG siguen disponibles y son la opción inicial. Si tu personaje tiene labios con volumen,
+sombras o pestañas detalladas, dile al asistente: **«Quiero probar boca y párpados con recortes de mi maestra»**.
+Te guiará para crear las variantes, verlas sobre tu imagen original y aprobarlas antes de usarlas.
+No hace falta generar gestos nuevos para cada video y puedes volver a SVG cuando quieras.
 
 **¿Mis fotos y mi voz se suben a algún lado?**
 Solo a los servicios que tú elijas: ChatGPT u OpenAI para crear las imágenes y, si los usas, OpenAI o ElevenLabs para la voz y la transcripción.
@@ -57,3 +65,5 @@ Dile a tu asistente cuál y qué cambiar: rehace solo esa.
 Código: `avatar/` (Python, se ejecuta con [uv](https://docs.astral.sh/uv/)) y `motion/` (HyperFrames).
 Las instrucciones para el agente están en `AGENTS.md` y en `.claude/skills/`.
 La fuente Montserrat se distribuye bajo la licencia SIL Open Font License (`motion/assets/fonts/OFL.txt`).
+
+Para contribuir al sistema facial, consulta [el flujo técnico y las pruebas](docs/gestos.md).

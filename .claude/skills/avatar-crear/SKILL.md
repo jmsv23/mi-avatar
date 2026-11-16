@@ -135,6 +135,13 @@ y agrega la corrección en `cara.json`:
 
 ## 6. Verificación final
 
+Antes de la revisión final, ofrece una vez las dos opciones de boca y párpados:
+**SVG** (formas dibujadas, listo sin generar más imágenes; recomendado para cartoon plano) o
+**recortes de la maestra** (conservan mejor el volumen y la textura, requieren preparar y revisar siete variantes;
+recomendado si la cara tiene un acabado detallado). No impongas una opción a quien ya eligió.
+Si quiere recortes, lee completa `../avatar-gestos/SKILL.md` y completa ese flujo.
+Si elige SVG, guarda la elección con `uv run avatar gestos usar svg` y sigue aquí.
+
 ```bash
 uv run avatar verificar                     # -> personaje/_revision/verificacion.png
 ```

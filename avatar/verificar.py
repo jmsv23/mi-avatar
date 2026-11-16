@@ -17,7 +17,8 @@ COLS = 6
 
 
 def cmd_verificar(a) -> None:
-    manifest = read_json(MANIFEST, "corre `avatar anclajes` primero")
+    from .rostro import actual
+    manifest = actual(read_json(MANIFEST, "corre `avatar anclajes` primero"))
     hoja = REVISION / "hoja"
     shutil.rmtree(hoja, ignore_errors=True)
     (hoja / "assets").mkdir(parents=True)

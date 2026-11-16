@@ -8,6 +8,11 @@ description: Produce un video narrado por el avatar del usuario. Parte de su gra
 Requisito: existe `personaje/manifest.json` (si no, ve a la skill `avatar-crear`).
 Cada video vive en `videos/<slug>/`. El slug es corto, en minúsculas y con guiones (p. ej. `presentacion`, `tip-01-precios`).
 
+Respeta el sistema facial que ya eligió el usuario. `componer` incluye automáticamente sus recortes
+cuando están activados, y comprueba que existan y pertenezcan a la maestra actual.
+No generes gestos para cada video ni cambies a SVG si falta una pieza: recupera el conjunto aprobado
+o sigue la skill `../avatar-gestos/SKILL.md` si el usuario pide cambiarlo.
+
 ## 1. Entrada
 
 Pregunta qué tiene el usuario:
